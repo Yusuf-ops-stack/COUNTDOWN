@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/touch.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box One Surprise</title>
+
+<!-- Fonts and icons -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* Ensure full-page coverage */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;        /* allow body to grow */
+  width: 100%;
+  overflow-x: hidden;       /* prevent horizontal scroll */
+  overflow-y: auto;         /* allow vertical scroll */
+  position: relative;
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #FFD3B5, #FFB5A7, #FFAAA6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #333;
+}
+
+
+/* Floating birthday symbols */
+#symbolsContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* so clicks go through */
+  overflow: hidden;
+  z-index: 0; /* behind content */
+}
+.symbol {
+  position: absolute;
+  font-size: clamp(20px, 3vw, 50px);
+  opacity: 0.15;
+  animation: floatSymbol linear infinite;
+}
+
+
+@keyframes floatSymbol {
+  0% { transform: translateY(0px) rotate(0deg); opacity:0.2; }
+  50% { transform: translateY(-20px) rotate(15deg); opacity:0.4; }
+  100% { transform: translateY(0px) rotate(0deg); opacity:0.2; }
+}
+
+/* Particles */
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: floatParticle linear infinite;
+}
+
+@keyframes floatParticle {
+  0% { transform: translateY(0px) scale(0.5); opacity:0.3; }
+  50% { transform: translateY(-20px) scale(1); opacity:0.9; }
+  100% { transform: translateY(0px) scale(0.5); opacity:0.3; }
+}
+
+/* Message */
+#message {
+  font-size: clamp(1rem, 4vw, 2.5rem);
+  text-align: center;
+  margin: 30px 20px;
+  line-height: 1.6;
+  max-width: 90vw;
+  word-wrap: break-word;
+  position: relative;
+  z-index: 2;
+}
+
+
+#message::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity:0.3; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity:0.6; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity:0.3; }
+}
+
+/* Lively 🎉 icons */
+.lively {
+  display: inline-block;
+  animation: bounceRotate 1.5s infinite;
+}
+
+@keyframes bounceRotate {
+  0%   { transform: translateY(0) rotate(0deg); }
+  25%  { transform: translateY(-8px) rotate(12deg); }
+  50%  { transform: translateY(0) rotate(0deg); }
+  75%  { transform: translateY(-8px) rotate(-12deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Next button */
+#nextBtn {
+  background: #fff;
+  border: 2px solid #FFC1A1;
+  color: #333;
+  padding: clamp(10px, 2vw, 18px) clamp(20px, 5vw, 40px);
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+  cursor: pointer;
+  border-radius: 15px;
+  transition: 0.3s;
+  z-index: 2;
+}
+
+#nextBtn:hover {
+  background: #FFD3B5;
+  border-color: #FFAAA6;
+}
+
+/* Music toggle button */
+#musicBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+<div id="symbolsContainer"></div>
+
+<!-- Background music -->
+<audio id="bgMusic" autoplay loop>
+  <source src="/Music/nastelbom-happy-birthday-471481.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+<button id="musicBtn" onclick="toggleMusic()">🔊</button>
+
+<!-- Birthday Message -->
+<div id="message">
+  <span class="lively">🎉</span> Happy 21st Birthday! <span class="lively">🎉</span><br><br>
+  To an extraordinary and unforgettable soul,<br><br>
+  Today marks a truly special milestone — your 21st year — a chapter filled with endless possibilities, new adventures, and dreams waiting to be realized. May this year bring you the courage to chase your passions, the wisdom to embrace every challenge, and the joy that comes from cherishing every precious moment.<br><br>
+  You are loved, admired, and celebrated not just for who you are, but for the light you bring into the lives of everyone around you. May laughter, love, and happiness surround you at every step, and may every wish you hold in your heart blossom into reality.<br><br>
+  Here’s to your growth, your dreams, and a future brighter than you can imagine. Happy 21st — a day as remarkable as you are! 🎂✨
+</div>
+
+<button id="nextBtn" onclick="goToBox2()">Box 2 <i class="fa-solid fa-arrow-right"></i></button>
+
+<script>
+// Create floating particles
+for(let i=0; i<60; i++){
+  let p = document.createElement("div");
+  p.className = "particle";
+  p.style.top = Math.random() * window.innerHeight + "px";
+  p.style.left = Math.random() * window.innerWidth + "px";
+  p.style.width = p.style.height = Math.random()*3 + 2 + "px";
+  p.style.animationDuration = (Math.random()*3 + 2) + "s";
+  document.body.appendChild(p);
+}
+
+// Create floating birthday symbols
+const symbols = ["🎂","🎈","🎉","🕯️"];
+const container = document.getElementById("symbolsContainer");
+
+// Make container cover the scrollable page
+window.addEventListener("load", () => {
+  const symbols = ["🎂","🎈","🎉","🕯️"];
+  const container = document.getElementById("symbolsContainer");
+
+  // Set container height to full page height
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "100%";
+  container.style.height = document.body.scrollHeight + "px";  
+
+  const pageHeight = document.body.scrollHeight;
+  const pageWidth = window.innerWidth;
+
+  for(let i=0; i<80; i++){
+    let s = document.createElement("div");
+    s.className = "symbol";
+    s.innerHTML = symbols[Math.floor(Math.random()*symbols.length)];
+    s.style.top = Math.random() * pageHeight + "px";  // full page height
+    s.style.left = Math.random() * pageWidth + "px";
+    s.style.fontSize = (Math.random()*30 + 20) + "px";
+    s.style.animationDuration = (Math.random()*5 + 5) + "s";
+    container.appendChild(s);
+  }
+});
+
+// Music toggle
+function toggleMusic(){
+  const music = document.getElementById("bgMusic");
+  const btn = document.getElementById("musicBtn");
+  if(music.paused){
+    music.play();
+    btn.innerHTML = "🔊";
+  } else {
+    music.pause();
+    btn.innerHTML = "🔇";
+  }
+}
+
+// Go to Box 2 page
+function goToBox2(){
+  window.location.href = "/box 2/index.html"; // replace with actual Box 2 path
+}
+</script>
+
+</body>
+</html>

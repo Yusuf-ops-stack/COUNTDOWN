@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/touch.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  flex-direction:column;
+  font-family:'Inter',sans-serif;
+  overflow:hidden;
+}
+
+/* Countdown container */
+#countdown{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  align-items:center;
+  margin-bottom:50px;
+}
+
+/* Individual time block */
+.time-block{
+  text-align:center;
+  font-family:'Bebas Neue', sans-serif;
+}
+
+/* Number style */
+.time-number{
+  font-size:10vw;
+  display:block;
+}
+
+/* Label style on top of numbers */
+.time-label{
+  font-size:2vw;
+  color:#aaa;
+  margin-bottom:5px;
+  display:block;
+}
+
+/* Separator ":" style */
+.separator{
+  font-size:10vw;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  0%,50%,100% { opacity:1; }
+  25%,75% { opacity:0; }
+}
+
+/* Pulsating effect for last 5 seconds */
+.pulse .time-number {
+  animation: pulseCountdown 1s infinite;
+}
+@keyframes pulseCountdown {
+  0%   { transform: scale(1); color:red; }
+  50%  { transform: scale(1.3); color:#ff5555; }
+  100% { transform: scale(1); color:red; }
+}
+
+/* Boxes container */
+#boxes{
+  display:none;
+  gap:40px;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* Individual box */
+.box{
+  width:150px;
+  height:150px;
+  background:#111;
+  border:2px solid #333;
+  border-radius:15px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:50px;
+  cursor:pointer;
+  opacity:0; 
+  transform: scale(0.5); 
+  transition: transform 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.5s;
+  animation: danceIdle 2s ease-in-out infinite;
+}
+
+/* Dance animation keyframes */
+@keyframes danceIdle {
+  0%   { transform: translateY(0) rotate(0deg); }
+  25%  { transform: translateY(-10px) rotate(-3deg); }
+  50%  { transform: translateY(5px) rotate(3deg); }
+  75%  { transform: translateY(-5px) rotate(-2deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Hover effect: lively bounce + glow */
+.box:hover{
+  animation: hoverLively 0.8s forwards;
+  transform: scale(1.3) rotate(-5deg);
+  background:#222;
+  border-color:#FFD700;
+  box-shadow: 0 0 15px #FFD700, 0 0 30px #FF4500;
+}
+@keyframes hoverLively {
+  0%   { transform: scale(1.1) rotate(0deg); }
+  30%  { transform: scale(1.35) rotate(5deg); }
+  50%  { transform: scale(1.25) rotate(-5deg); }
+  70%  { transform: scale(1.3) rotate(3deg); }
+  100% { transform: scale(1.3) rotate(0deg); }
+}
+
+/* Pop-in animation for initial reveal */
+.box.show{
+  animation: popIn 0.6s forwards;
+}
+@keyframes popIn {
+  0% { opacity:0; transform:scale(0.5);}
+  50% { opacity:1; transform:scale(1.2);}
+  100% { opacity:1; transform:scale(1);}
+}
+
+/* Animated "21 innit" message */
+#message{
+  position:absolute;
+  font-family:'Bebas Neue', sans-serif;
+  font-size:20vw;
+  color:#ff0;
+  opacity:0;
+  text-align:center;
+  z-index:10;
+}
+.showMessage {
+  opacity:1;
+  animation: bounceFlash 7s ease-in-out forwards;
+}
+@keyframes bounceFlash {
+  0%   { transform: scale(0.5); opacity:0; }
+  10%  { transform: scale(1.2); opacity:1; }
+  30%  { transform: scale(0.9); opacity:0.8; }
+  50%  { transform: scale(1.1); opacity:1; }
+  70%  { transform: scale(0.95); opacity:0.8; }
+  90%  { transform: scale(1.05); opacity:1; }
+  100% { transform: scale(1); opacity:1; }
+}
+
+/* Confetti canvas */
+#confettiCanvas{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+/* Responsive adjustments */
+@media(max-width: 600px){
+  .box{
+    width:100px;
+    height:100px;
+    font-size:35px;
+  }
+  #message{
+    font-size:25vw;
+  }
+  .time-number{
+    font-size:15vw;
+  }
+  .time-label{
+    font-size:4vw;
+  }
+  .separator{
+    font-size:15vw;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Countdown -->
+<div id="countdown">
+  <div class="time-block"><span class="time-label">Days</span><span class="time-number" id="days">00</span></div>
+  <div class="separator">:</div>
+  <div class="time-block"><span class="time-label">Hours</span><span class="time-number" id="hours">00</span></div>
+  <div class="separator">:</div>
+  <div class="time-block"><span class="time-label">Minutes</span><span class="time-number" id="minutes">00</span></div>
+  <div class="separator">:</div>
+  <div class="time-block"><span class="time-label">Seconds</span><span class="time-number" id="seconds">00</span></div>
+</div>
+
+<!-- 21 innit message -->
+<div id="message">21 innit</div>
+
+<!-- Boxes -->
+<div id="boxes">
+  <div class="box" onclick="location.href='/box 1/index.html'">🎁</div>
+  <div class="box" onclick="location.href='/box 2/index.html'">🎁</div>
+  <div class="box" onclick="location.href='/box 3/index.html'">🎁</div>
+</div>
+
+<audio id="heartbeatSound" src="/Music/heartbeat.mp3" preload="auto" loop></audio>
+
+<canvas id="confettiCanvas"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+// Countdown target
+var target = new Date("March 15, 2026 00:00:00").getTime();
+var heartbeatAudio = document.getElementById("heartbeatSound");
+heartbeatAudio.volume = 0;
+var audioStarted = false;
+
+function startAudio() {
+    if (!audioStarted) {
+        heartbeatAudio.play().catch(() => {});
+        audioStarted = true;
+    }
+}
+document.body.addEventListener('click', startAudio, { once: true });
+
+// Fireworks burst
+function fireworkBurst(){
+    var colors = ['#ff0043','#14fc56','#00fffc','#fffc00','#ff00ff','#ff7b00'];
+    var duration = 2 * 1000;
+    var end = Date.now() + duration;
+    (function frame(){
+        confetti({
+            particleCount: 6,
+            startVelocity: 30,
+            spread: 360,
+            ticks: 60,
+            gravity: 0.5,
+            origin: { x: 0.5, y: 0.5 },
+            colors: colors
+        });
+        if(Date.now() < end){ requestAnimationFrame(frame); }
+    })();
+}
+
+// Countdown timer
+var timer = setInterval(function(){
+    var now = new Date().getTime();
+    var distance = target - now;
+
+    var days = Math.floor(distance / (1000*60*60*24));
+    var hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+    var minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+    var seconds = Math.floor((distance % (1000*60)) / 1000);
+
+    document.getElementById("days").textContent = String(days).padStart(2,'0');
+    document.getElementById("hours").textContent = String(hours).padStart(2,'0');
+    document.getElementById("minutes").textContent = String(minutes).padStart(2,'0');
+    document.getElementById("seconds").textContent = String(seconds).padStart(2,'0');
+
+    var countdownEl = document.getElementById("countdown");
+    if(distance <= 5000 && distance > 0){
+        countdownEl.classList.add("pulse");
+        if(audioStarted){ heartbeatAudio.volume = Math.min(0.7, 0.7*(5000-distance)/5000); }
+    } else {
+        countdownEl.classList.remove("pulse");
+        if(audioStarted){ heartbeatAudio.volume = 0; }
+    }
+
+    if(distance <= 0){
+        clearInterval(timer);
+        countdownEl.style.display = "none";
+
+        const message = document.getElementById("message");
+        message.classList.add("showMessage");
+
+        fireworkBurst();
+        var confettiInterval = setInterval(fireworkBurst, 400);
+
+        setTimeout(() => {
+            clearInterval(confettiInterval);
+            message.style.display = "none";
+
+            const boxes = document.getElementById("boxes");
+            boxes.style.display = "flex";
+            const boxElements = boxes.querySelectorAll(".box");
+            boxElements.forEach((box,index)=>{
+                setTimeout(()=>{ box.classList.add("show"); }, index*200);
+            });
+
+            if(audioStarted){ heartbeatAudio.pause(); }
+        }, 7000);
+    }
+},1000);
+</script>
+
+</body>
+</html>

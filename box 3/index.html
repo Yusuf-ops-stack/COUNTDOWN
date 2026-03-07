@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/touch.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Three Surprise</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'DM Serif Display', serif;
+  background: linear-gradient(135deg, #FFD3B5, #FFB5A7, #FFAAA6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  overflow: hidden;
+}
+
+/* Slideshow container - portrait */
+#slideshowContainer {
+  position: relative;
+  width: 60%;          /* portrait width smaller than full page */
+  max-width: 400px;
+  height: 80vh;        /* tall container for portrait */
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  margin-bottom: 30px;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Slides */
+.slide, .slide video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* keep entire photo/video visible */
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+/* Active slide */
+.slide.active, .slide.active video {
+  opacity: 1;
+  z-index: 2;
+}
+
+/* Music button */
+#musicBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  z-index: 5;
+}
+
+/* Next button */
+#nextBtn {
+  background: #fff;
+  border: 2px solid #FFC1A1;
+  color: #333;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 20px;
+  display: none; /* only shown at last slide */
+}
+
+#nextBtn:hover {
+  background: #FFD3B5;
+  border-color: #FFAAA6;
+}
+
+/* Responsive adjustments */
+@media(max-width: 600px){
+  #slideshowContainer {
+    width: 80%;
+    height: 70vh;
+  }
+
+  #nextBtn {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Background Music -->
+<audio id="bgMusic" autoplay loop>
+  <source src="/Music/Ultimate.mpeg" type="audio/mpeg">
+</audio>
+<button id="musicBtn" onclick="toggleMusic()">🔊</button>
+
+<!-- Slideshow -->
+<div id="slideshowContainer">
+  <!-- Image slides -->
+  <img src="/slideshow/picture 1.jpeg" class="slide active">
+  <img src="/slideshow/picture 2.jpeg" class="slide">
+  <img src="/slideshow/picture 3.jpeg" class="slide">
+  <img src="/slideshow/picture 4.jpeg" class="slide">
+  <img src="/slideshow/picture 5.jpeg" class="slide">
+  <img src="/slideshow/picture 6.jpeg" class="slide">
+  <img src="/slideshow/picture 7.jpeg" class="slide">
+  <img src="/slideshow/picture 8.jpeg" class="slide">
+  <img src="/slideshow/picture 9.jpeg" class="slide">
+  <img src="/slideshow/picture 10.jpeg" class="slide">
+  <img src="/slideshow/picture 11.jpeg" class="slide">
+  <!-- Video slides -->
+  <div class="slide">
+    <video muted loop>
+      <source src="/slideshow/video 1.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="slide">
+    <video muted loop>
+      <source src="/slideshow/video 2.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="slide">
+    <video muted loop>
+      <source src="/slideshow/video 3.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="slide">
+    <video muted loop>
+      <source src="/slideshow/video 4.mp4" type="video/mp4">
+    </video>
+  </div><div class="slide">
+    <video muted loop>
+      <source src="/slideshow/video 5.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+
+<button id="nextBtn" onclick="goToBox4()">Next Surprise <i class="fa-solid fa-arrow-right"></i></button>
+
+<script>
+// Music toggle
+function toggleMusic(){
+  const music = document.getElementById("bgMusic");
+  const btn = document.getElementById("musicBtn");
+  if(music.paused){
+    music.play();
+    btn.innerHTML = "🔊";
+  } else {
+    music.pause();
+    btn.innerHTML = "🔇";
+  }
+}
+
+// Slideshow logic
+let slides = document.querySelectorAll(".slide");
+let currentSlide = 0;
+const slideInterval = 5000; // 5 seconds per slide
+
+function showNextSlide() {
+  slides[currentSlide].classList.remove("active");
+  let currentVideo = slides[currentSlide].querySelector("video");
+  if(currentVideo){
+    currentVideo.pause();
+    currentVideo.currentTime = 0;
+  }
+
+  currentSlide++;
+  if(currentSlide >= slides.length){
+    currentSlide = slides.length - 1;
+    document.getElementById("nextBtn").style.display = "inline-block"; // show button at last slide
+    return;
+  }
+
+  slides[currentSlide].classList.add("active");
+  let nextVideo = slides[currentSlide].querySelector("video");
+  if(nextVideo){
+    nextVideo.play();
+  }
+}
+
+// Auto-play slideshow
+setInterval(showNextSlide, slideInterval);
+
+// Redirect to Box 4
+function goToBox4(){
+  window.location.href = "/box 4/index.html"; // replace with your next box path
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="/touch.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Two Surprise</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body{
+  margin:0;
+  font-family:'DM Serif Display', serif;
+  background: linear-gradient(135deg, #FFD3B5, #FFB5A7, #FFAAA6);
+  color:#333;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  overflow-y:auto;
+  padding:20px;
+}
+
+/* Video container */
+#videoContainer{
+  position: relative;
+  max-width:800px;
+  width:90%;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow: 0 0 25px rgba(0,0,0,0.3);
+  margin-bottom:30px;
+}
+
+video{
+  width:100%;
+  height:auto;
+  border-radius:20px;
+}
+
+/* Next button */
+#nextBtn{
+  display:none; /* hidden until video ends */
+  background:#fff;
+  border:2px solid #FFC1A1;
+  color:#333;
+  padding:15px 30px;
+  font-size:1.2rem;
+  border-radius:15px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+#nextBtn:hover{
+  background:#FFD3B5;
+  border-color:#FFAAA6;
+}
+</style>
+</head>
+
+<body>
+
+<div id="videoContainer">
+  <video id="birthdayVideo" autoplay muted controls>
+    <source src="/Video/171562-845611836_medium.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+
+<button id="nextBtn" onclick="goToBox3()">Go to Box 3 <i class="fa-solid fa-arrow-right"></i></button>
+
+<script>
+// Show "Next" button after video ends
+const video = document.getElementById("birthdayVideo");
+const nextBtn = document.getElementById("nextBtn");
+
+video.addEventListener("ended", () => {
+  nextBtn.style.display = "inline-block";
+});
+
+// Optional: allow skipping
+video.addEventListener("click", () => {
+  nextBtn.style.display = "inline-block";
+});
+
+// Redirect to Box 3
+function goToBox3(){
+  window.location.href = "/box 3/index.html"; // replace with your Box 3 path
+}
+</script>
+
+</body>
+</html>
