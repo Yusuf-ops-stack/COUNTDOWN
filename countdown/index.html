@@ -350,47 +350,39 @@ const rotateIcon = rotateBtn.querySelector("i");
 const rotateText = rotateBtn.querySelector("span");
 
 rotateBtn.addEventListener("click", async () => {
-    try {
 
-        if (!document.fullscreenElement) {
-            // ENTER FULLSCREEN
+    if (!document.fullscreenElement) {
+
+        // ENTER FULLSCREEN
+        if (document.documentElement.requestFullscreen) {
             await document.documentElement.requestFullscreen();
-
-            // LOCK LANDSCAPE
-            if (screen.orientation?.lock) {
-                await screen.orientation.lock("landscape");
-            }
-
-            rotateIcon.classList.remove("fa-expand");
-            rotateIcon.classList.add("fa-compress");
-            rotateText.textContent = "Exit Fullscreen";
-
-        } else {
-            // EXIT FULLSCREEN
-            await document.exitFullscreen();
-
-            if (screen.orientation?.unlock) {
-                screen.orientation.unlock();
-            }
-
-            rotateIcon.classList.remove("fa-compress");
-            rotateIcon.classList.add("fa-expand");
-            rotateText.textContent = "Fullscreen";
         }
 
-    } catch (err) {
-        console.log(err);
-        alert("Fullscreen not supported on this device 🙂");
-    }
-});
-document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) {
-        rotateIcon.classList.remove("fa-compress");
-        rotateIcon.classList.add("fa-expand");
+        // TRY ROTATE (ignore failure)
+        try {
+            await screen.orientation.lock("landscape");
+        } catch (e) {
+            console.log("Rotation not supported");
+        }
+
+        rotateIcon.classList.replace("fa-expand","fa-compress");
+        rotateText.textContent = "Exit Fullscreen";
+
+    } else {
+
+        // EXIT FULLSCREEN
+        if (document.exitFullscreen) {
+            await document.exitFullscreen();
+        }
+
+        try {
+            screen.orientation.unlock();
+        } catch(e){}
+
+        rotateIcon.classList.replace("fa-compress","fa-expand");
         rotateText.textContent = "Fullscreen";
     }
 });
-
 </script>
 
 </body>
