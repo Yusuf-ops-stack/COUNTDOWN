@@ -190,10 +190,34 @@ body{
     font-size:15vw;
   }
 }
+#rotateBtn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:#111;
+  border:2px solid #444;
+  color:white;
+  padding:10px 15px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:14px;
+  z-index:20;
+  margin-right:8px;
+}
+
+#rotateBtn:hover{
+  background:#222;
+  border-color:#FFD700;
+}
+
 </style>
 </head>
 
 <body>
+<button id="rotateBtn">
+  <i class="fas fa-expand"></i>
+  <span>Fullscreen</span>
+</button>
 
 <!-- Countdown -->
 <div id="countdown">
@@ -304,6 +328,69 @@ var timer = setInterval(function(){
         }, 7000);
     }
 },1000);
+document.getElementById("rotateBtn").addEventListener("click", async () => {
+    try {
+        // Enter fullscreen (hides chrome bar)
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        }
+
+        // Lock to landscape
+        if (screen.orientation && screen.orientation.lock) {
+            await screen.orientation.lock("landscape");
+        }
+
+    } catch (err) {
+        console.log("Rotation / fullscreen failed:", err);
+        alert("Rotate your phone manually 🙂");
+    }
+});
+const rotateBtn = document.getElementById("rotateBtn");
+const rotateIcon = rotateBtn.querySelector("i");
+const rotateText = rotateBtn.querySelector("span");
+
+rotateBtn.addEventListener("click", async () => {
+    try {
+
+        if (!document.fullscreenElement) {
+            // ENTER FULLSCREEN
+            await document.documentElement.requestFullscreen();
+
+            // LOCK LANDSCAPE
+            if (screen.orientation?.lock) {
+                await screen.orientation.lock("landscape");
+            }
+
+            rotateIcon.classList.remove("fa-expand");
+            rotateIcon.classList.add("fa-compress");
+            rotateText.textContent = "Exit Fullscreen";
+
+        } else {
+            // EXIT FULLSCREEN
+            await document.exitFullscreen();
+
+            if (screen.orientation?.unlock) {
+                screen.orientation.unlock();
+            }
+
+            rotateIcon.classList.remove("fa-compress");
+            rotateIcon.classList.add("fa-expand");
+            rotateText.textContent = "Fullscreen";
+        }
+
+    } catch (err) {
+        console.log(err);
+        alert("Fullscreen not supported on this device 🙂");
+    }
+});
+document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+        rotateIcon.classList.remove("fa-compress");
+        rotateIcon.classList.add("fa-expand");
+        rotateText.textContent = "Fullscreen";
+    }
+});
+
 </script>
 
 </body>
