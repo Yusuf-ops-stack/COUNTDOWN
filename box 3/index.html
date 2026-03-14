@@ -100,6 +100,41 @@ body {
     padding: 10px 20px;
   }
 }
+#birthdayScreen{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: linear-gradient(135deg, #ff758c, #ff7eb3);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    font-family: Arial, sans-serif;
+    font-size:40px;
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transition:1s;
+}
+
+#birthdayScreen.show{
+    opacity:1;
+    pointer-events:auto;
+}
+
+#birthdayScreen h1{
+    animation: pop 1s ease;
+}
+
+@keyframes pop{
+    0%{transform:scale(0);}
+    70%{transform:scale(1.2);}
+    100%{transform:scale(1);}
+}
+
 </style>
 </head>
 
@@ -123,8 +158,8 @@ body {
   <img src="/slideshow/picture 7.jpeg" class="slide">
   <img src="/slideshow/picture 8.jpeg" class="slide">
   <img src="/slideshow/picture 9.jpeg" class="slide">
-  <img src="/slideshow/picture 10.jpeg" class="slide">
-  <img src="/slideshow/picture 11.jpeg" class="slide">
+  <img src="/pics/WhatsApp Image 2026-03-07 at 09.11.35 (2).jpeg" class="slide">
+  <img src="/pics/WhatsApp Image 2026-03-07 at 09.11.35.jpeg" class="slide">
   <!-- Video slides -->
   <div class="slide">
     <video muted loop>
@@ -152,7 +187,13 @@ body {
   </div>
 </div>
 
-<button id="nextBtn" onclick="goToBox4()">Next Surprise <i class="fa-solid fa-arrow-right"></i></button>
+<button id="nextBtn" onclick="showBirthday()">Next Surprise <i class="fa-solid fa-arrow-right"></i></button>
+
+<div id="birthdayScreen">
+    <h1>🎉 Happy 21st Birthday 🎉</h1>
+    <p>May your dreams shine brighter than ever 💖</p>
+    <p>Madam Celora</p>
+</div>
 
 <script>
 // Music toggle
@@ -198,10 +239,35 @@ function showNextSlide() {
 // Auto-play slideshow
 setInterval(showNextSlide, slideInterval);
 
-// Redirect to Box 4
-function goToBox4(){
-  window.location.href = "/box 4/index.html"; // replace with your next box path
+function showBirthday(){
+    document.getElementById("birthdayScreen").classList.add("show");
+    launchConfetti();
 }
+
+function launchConfetti(){
+    for(let i=0;i<120;i++){
+        let confetti=document.createElement("div");
+        confetti.style.position="fixed";
+        confetti.style.width="8px";
+        confetti.style.height="8px";
+        confetti.style.background="hsl("+Math.random()*360+",100%,50%)";
+        confetti.style.top="-10px";
+        confetti.style.left=Math.random()*100+"%";
+        confetti.style.opacity="0.8";
+        confetti.style.transform="rotate("+Math.random()*360+"deg)";
+        confetti.style.transition="3s linear";
+        document.body.appendChild(confetti);
+
+        setTimeout(()=>{
+            confetti.style.top="110%";
+        },50);
+
+        setTimeout(()=>{
+            confetti.remove();
+        },3000);
+    }
+}
+
 </script>
 
 </body>

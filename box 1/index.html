@@ -233,6 +233,12 @@ function toggleMusic(){
 function goToBox2(){
   window.location.href = "/box 2/index.html"; // replace with actual Box 2 path
 }
+document.addEventListener("click", function startMusicOnce(){
+    const music = document.getElementById("bgMusic");
+    music.play().catch(()=>{});
+    document.removeEventListener("click", startMusicOnce);
+});
+
 </script>
 
 </body>
