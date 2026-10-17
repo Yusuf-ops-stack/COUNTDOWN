@@ -2,386 +2,712 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/touch.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+
 <title>Countdown</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/touch.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
 <style>
-body{
-  margin:0;
-  background:#000;
-  color:white;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  flex-direction:column;
-  font-family:'Inter',sans-serif;
-  overflow:hidden;
+:root {
+    --background: #000;
+    --surface: #111;
+    --border: #333;
+    --gold: #FFD700;
+    --text: #fff;
+    --muted: #aaa;
 }
 
-/* Countdown container */
-#countdown{
-  display:flex;
-  gap:10px;
-  justify-content:center;
-  align-items:center;
-  margin-bottom:50px;
+* {
+    box-sizing: border-box;
 }
 
-/* Individual time block */
-.time-block{
-  text-align:center;
-  font-family:'Bebas Neue', sans-serif;
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    width: 100%;
+    background: var(--background);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
 }
 
-/* Number style */
-.time-number{
-  font-size:10vw;
-  display:block;
+/* Fullscreen button */
+
+#rotateBtn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: #111;
+    border: 2px solid #444;
+    color: white;
+    padding: 11px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    z-index: 30;
+    transition: background .25s, border-color .25s;
 }
 
-/* Label style on top of numbers */
-.time-label{
-  font-size:2vw;
-  color:#aaa;
-  margin-bottom:5px;
-  display:block;
+#rotateBtn:hover {
+    background: #222;
+    border-color: var(--gold);
 }
 
-/* Separator ":" style */
-.separator{
-  font-size:10vw;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  animation: blink 1s infinite;
+#rotateBtn:focus-visible,
+.box:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 5px;
 }
+
+/* Countdown layout */
+
+#countdown {
+    display: flex;
+    width: 96%;
+    max-width: 1200px;
+    gap: clamp(3px, 1.2vw, 14px);
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.time-block {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.time-number {
+    display: block;
+    font-size: clamp(22px, 8vw, 100px);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.time-label {
+    display: block;
+    color: var(--muted);
+    font-size: clamp(9px, 1.6vw, 20px);
+    margin-bottom: 8px;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(22px, 7vw, 80px);
+    animation: blink 1s infinite;
+}
+
 @keyframes blink {
-  0%,50%,100% { opacity:1; }
-  25%,75% { opacity:0; }
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
 }
 
-/* Pulsating effect for last 5 seconds */
+/* Final five seconds */
+
 .pulse .time-number {
-  animation: pulseCountdown 1s infinite;
+    animation: pulseCountdown 1s infinite;
 }
+
 @keyframes pulseCountdown {
-  0%   { transform: scale(1); color:red; }
-  50%  { transform: scale(1.3); color:#ff5555; }
-  100% { transform: scale(1); color:red; }
+    0%, 100% {
+        transform: scale(1);
+        color: red;
+    }
+
+    50% {
+        transform: scale(1.12);
+        color: #ff5555;
+    }
 }
 
-/* Boxes container */
-#boxes{
-  display:none;
-  gap:40px;
-  justify-content:center;
-  align-items:center;
-  flex-wrap:wrap;
+/* Celebration message */
+
+#message {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(70px, 20vw, 250px);
+    color: #ff0;
+    text-align: center;
+    line-height: 1;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10;
+    pointer-events: none;
+    white-space: nowrap;
 }
 
-/* Individual box */
-.box{
-  width:150px;
-  height:150px;
-  background:#111;
-  border:2px solid #333;
-  border-radius:15px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:50px;
-  cursor:pointer;
-  opacity:0; 
-  transform: scale(0.5); 
-  transition: transform 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s, opacity 0.5s;
-  animation: danceIdle 2s ease-in-out infinite;
+#message.showMessage {
+    visibility: visible;
+    animation: bounceFlash 7s ease-in-out forwards;
 }
 
-/* Dance animation keyframes */
-@keyframes danceIdle {
-  0%   { transform: translateY(0) rotate(0deg); }
-  25%  { transform: translateY(-10px) rotate(-3deg); }
-  50%  { transform: translateY(5px) rotate(3deg); }
-  75%  { transform: translateY(-5px) rotate(-2deg); }
-  100% { transform: translateY(0) rotate(0deg); }
-}
-
-/* Hover effect: lively bounce + glow */
-.box:hover{
-  animation: hoverLively 0.8s forwards;
-  transform: scale(1.3) rotate(-5deg);
-  background:#222;
-  border-color:#FFD700;
-  box-shadow: 0 0 15px #FFD700, 0 0 30px #FF4500;
-}
-@keyframes hoverLively {
-  0%   { transform: scale(1.1) rotate(0deg); }
-  30%  { transform: scale(1.35) rotate(5deg); }
-  50%  { transform: scale(1.25) rotate(-5deg); }
-  70%  { transform: scale(1.3) rotate(3deg); }
-  100% { transform: scale(1.3) rotate(0deg); }
-}
-
-/* Pop-in animation for initial reveal */
-.box.show{
-  animation: popIn 0.6s forwards;
-}
-@keyframes popIn {
-  0% { opacity:0; transform:scale(0.5);}
-  50% { opacity:1; transform:scale(1.2);}
-  100% { opacity:1; transform:scale(1);}
-}
-
-/* Animated "21 innit" message */
-#message{
-  position:absolute;
-  font-family:'Bebas Neue', sans-serif;
-  font-size:20vw;
-  color:#ff0;
-  opacity:0;
-  text-align:center;
-  z-index:10;
-}
-.showMessage {
-  opacity:1;
-  animation: bounceFlash 7s ease-in-out forwards;
-}
 @keyframes bounceFlash {
-  0%   { transform: scale(0.5); opacity:0; }
-  10%  { transform: scale(1.2); opacity:1; }
-  30%  { transform: scale(0.9); opacity:0.8; }
-  50%  { transform: scale(1.1); opacity:1; }
-  70%  { transform: scale(0.95); opacity:0.8; }
-  90%  { transform: scale(1.05); opacity:1; }
-  100% { transform: scale(1); opacity:1; }
+    0% {
+        transform: scale(.5);
+        opacity: 0;
+    }
+
+    10% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    30% {
+        transform: scale(.9);
+        opacity: .8;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    70% {
+        transform: scale(.95);
+        opacity: .8;
+    }
+
+    90% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Gift boxes */
+
+#boxes {
+    display: none;
+    gap: clamp(15px, 4vw, 40px);
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 20px;
+    z-index: 5;
+}
+
+.box {
+    width: clamp(90px, 18vw, 150px);
+    height: clamp(90px, 18vw, 150px);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(35px, 6vw, 55px);
+    cursor: pointer;
+    opacity: 0;
+    transform: scale(.5);
+    transition:
+        background .3s,
+        border-color .3s,
+        box-shadow .3s;
+    animation: danceIdle 2s ease-in-out infinite;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes danceIdle {
+    0%, 100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    25% {
+        transform: translateY(-8px) rotate(-3deg);
+    }
+
+    50% {
+        transform: translateY(4px) rotate(3deg);
+    }
+
+    75% {
+        transform: translateY(-4px) rotate(-2deg);
+    }
+}
+
+.box:hover {
+    background: #222;
+    border-color: var(--gold);
+    box-shadow:
+        0 0 15px #FFD700,
+        0 0 30px #FF4500;
+    animation: hoverLively .8s forwards;
+}
+
+@keyframes hoverLively {
+    0% {
+        transform: scale(1) rotate(0);
+    }
+
+    30% {
+        transform: scale(1.15) rotate(5deg);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(-5deg);
+    }
+
+    70% {
+        transform: scale(1.15) rotate(3deg);
+    }
+
+    100% {
+        transform: scale(1.12) rotate(0);
+    }
+}
+
+.box.show {
+    animation:
+        popIn .6s ease-out forwards,
+        danceIdle 2s ease-in-out .6s infinite;
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(.5);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Confetti canvas */
-#confettiCanvas{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
+
+#confettiCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 8;
 }
 
-/* Responsive adjustments */
-@media(max-width: 600px){
-  .box{
-    width:100px;
-    height:100px;
-    font-size:35px;
-  }
-  #message{
-    font-size:25vw;
-  }
-  .time-number{
-    font-size:15vw;
-  }
-  .time-label{
-    font-size:4vw;
-  }
-  .separator{
-    font-size:15vw;
-  }
-}
-#rotateBtn{
-  position:absolute;
-  top:20px;
-  right:20px;
-  background:#111;
-  border:2px solid #444;
-  color:white;
-  padding:10px 15px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:14px;
-  z-index:20;
-  margin-right:8px;
+/* Mobile layout */
+
+@media (max-width: 600px) {
+    #countdown {
+        width: 98%;
+        gap: 2px;
+        margin-bottom: 30px;
+    }
+
+    .time-number {
+        font-size: clamp(20px, 8vw, 42px);
+    }
+
+    .time-label {
+        font-size: clamp(8px, 2.4vw, 13px);
+        letter-spacing: 0;
+        margin-bottom: 6px;
+    }
+
+    .separator {
+        font-size: 6vw;
+    }
+
+    #rotateBtn {
+        top: 12px;
+        right: 12px;
+        padding: 9px 11px;
+        font-size: 12px;
+    }
+
+    #message {
+        font-size: 24vw;
+    }
 }
 
-#rotateBtn:hover{
-  background:#222;
-  border-color:#FFD700;
+/* Short landscape screens */
+
+@media (max-height: 450px) and (orientation: landscape) {
+    #countdown {
+        width: 85%;
+        margin-bottom: 10px;
+    }
+
+    .time-number {
+        font-size: min(9vh, 65px);
+    }
+
+    .time-label {
+        font-size: min(3vh, 14px);
+        margin-bottom: 4px;
+    }
+
+    .separator {
+        font-size: min(8vh, 55px);
+    }
+
+    #rotateBtn {
+        top: 8px;
+        right: 8px;
+        padding: 7px 10px;
+    }
+
+    .box {
+        width: min(20vh, 100px);
+        height: min(20vh, 100px);
+    }
 }
 
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+    .separator,
+    .pulse .time-number,
+    .box {
+        animation-duration: 3s;
+    }
+}
 </style>
 </head>
 
 <body>
-<button id="rotateBtn">
-  <i class="fas fa-expand"></i>
-  <span>Fullscreen</span>
+
+<button id="rotateBtn" type="button" aria-label="Enter fullscreen">
+    <i class="fas fa-expand" aria-hidden="true"></i>
+    <span>Fullscreen</span>
 </button>
 
-<!-- Countdown -->
-<div id="countdown">
-  <div class="time-block"><span class="time-label">Days</span><span class="time-number" id="days">00</span></div>
-  <div class="separator">:</div>
-  <div class="time-block"><span class="time-label">Hours</span><span class="time-number" id="hours">00</span></div>
-  <div class="separator">:</div>
-  <div class="time-block"><span class="time-label">Minutes</span><span class="time-number" id="minutes">00</span></div>
-  <div class="separator">:</div>
-  <div class="time-block"><span class="time-label">Seconds</span><span class="time-number" id="seconds">00</span></div>
+<!-- Five-part countdown -->
+<div id="countdown" aria-label="Countdown to November 12, 2026">
+    <div class="time-block">
+        <span class="time-label">Weeks</span>
+        <span class="time-number" id="weeks">00</span>
+    </div>
+
+    <div class="separator" aria-hidden="true">:</div>
+
+    <div class="time-block">
+        <span class="time-label">Days</span>
+        <span class="time-number" id="days">00</span>
+    </div>
+
+    <div class="separator" aria-hidden="true">:</div>
+
+    <div class="time-block">
+        <span class="time-label">Hours</span>
+        <span class="time-number" id="hours">00</span>
+    </div>
+
+    <div class="separator" aria-hidden="true">:</div>
+
+    <div class="time-block">
+        <span class="time-label">Minutes</span>
+        <span class="time-number" id="minutes">00</span>
+    </div>
+
+    <div class="separator" aria-hidden="true">:</div>
+
+    <div class="time-block">
+        <span class="time-label">Seconds</span>
+        <span class="time-number" id="seconds">00</span>
+    </div>
 </div>
 
-<!-- 21 innit message -->
-<div id="message">21 innit</div>
+<!-- Celebration message -->
+<div id="message" aria-live="polite">ALL THE BEST</div>
 
-<!-- Boxes -->
-<div id="boxes">
-  <div class="box" onclick="location.href='/box 1/index.html'">🎁</div>
-  <div class="box" onclick="location.href='/box 2/index.html'">🎁</div>
-  <div class="box" onclick="location.href='/box 3/index.html'">🎁</div>
+<!-- Gift boxes (temporarily disabled; restore later)
+<div id="boxes" aria-label="Choose a gift">
+    <a class="box" href="/box%201/index.html"
+       aria-label="Open gift one" style="text-decoration:none">🎁</a>
+
+    <a class="box" href="/box%202/index.html"
+       aria-label="Open gift two" style="text-decoration:none">🎁</a>
+
+    <a class="box" href="/box%203/index.html"
+       aria-label="Open gift three" style="text-decoration:none">🎁</a>
 </div>
+-->
 
-<audio id="heartbeatSound" src="/Music/heartbeat.mp3" preload="auto" loop></audio>
+<audio
+    id="heartbeatSound"
+    src="/Music/heartbeat.mp3"
+    preload="auto"
+    loop>
+</audio>
 
-<canvas id="confettiCanvas"></canvas>
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
-// Countdown target
-var target = new Date("March 15, 2026 07:45:00").getTime();
-var heartbeatAudio = document.getElementById("heartbeatSound");
+"use strict";
+
+/* =========================================
+   COUNTDOWN CONFIGURATION
+   Target: November 12, 2026 at 8:00 AM
+   Uses the visitor's local time zone.
+========================================= */
+
+const target = new Date(2026, 10, 12, 8, 0, 0).getTime();
+
+const heartbeatAudio = document.getElementById("heartbeatSound");
+const countdownEl = document.getElementById("countdown");
+const messageEl = document.getElementById("message");
+const boxesEl = document.getElementById("boxes");
+const rotateBtn = document.getElementById("rotateBtn");
+const rotateIcon = rotateBtn.querySelector("i");
+const rotateText = rotateBtn.querySelector("span");
+
+let audioStarted = false;
+let celebrationStarted = false;
+let confettiInterval = null;
+let countdownTimer = null;
+
+/* =========================================
+   AUDIO
+========================================= */
+
 heartbeatAudio.volume = 0;
-var audioStarted = false;
 
 function startAudio() {
-    if (!audioStarted) {
-        heartbeatAudio.play().catch(() => {});
-        audioStarted = true;
-    }
-}
-document.body.addEventListener('click', startAudio, { once: true });
+    if (audioStarted) return;
 
-// Fireworks burst
-function fireworkBurst(){
-    var colors = ['#ff0043','#14fc56','#00fffc','#fffc00','#ff00ff','#ff7b00'];
-    var duration = 2 * 1000;
-    var end = Date.now() + duration;
-    (function frame(){
+    audioStarted = true;
+
+    heartbeatAudio.play().catch((error) => {
+        console.log("Audio playback requires another user interaction.", error);
+        audioStarted = false;
+    });
+}
+
+// Browsers require a user gesture before audio can play.
+document.addEventListener("pointerdown", startAudio, { once: true });
+
+/* =========================================
+   FIREWORKS
+========================================= */
+
+function fireworkBurst() {
+    if (typeof confetti !== "function") {
+        console.warn("Confetti library unavailable.");
+        return;
+    }
+
+    const colors = [
+        "#ff0043",
+        "#14fc56",
+        "#00fffc",
+        "#fffc00",
+        "#ff00ff",
+        "#ff7b00"
+    ];
+
+    const end = Date.now() + 1500;
+
+    (function frame() {
         confetti({
             particleCount: 6,
             startVelocity: 30,
             spread: 360,
             ticks: 60,
             gravity: 0.5,
-            origin: { x: 0.5, y: 0.5 },
-            colors: colors
+            origin: {
+                x: 0.5,
+                y: 0.5
+            },
+            colors: colors,
+            disableForReducedMotion: true
         });
-        if(Date.now() < end){ requestAnimationFrame(frame); }
+
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
     })();
 }
 
-// Countdown timer
-var timer = setInterval(function(){
-    var now = new Date().getTime();
-    var distance = target - now;
+/* =========================================
+   CELEBRATION
+========================================= */
 
-    var days = Math.floor(distance / (1000*60*60*24));
-    var hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-    var minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
-    var seconds = Math.floor((distance % (1000*60)) / 1000);
+function celebrate() {
+    if (celebrationStarted) return;
 
-    document.getElementById("days").textContent = String(days).padStart(2,'0');
-    document.getElementById("hours").textContent = String(hours).padStart(2,'0');
-    document.getElementById("minutes").textContent = String(minutes).padStart(2,'0');
-    document.getElementById("seconds").textContent = String(seconds).padStart(2,'0');
+    celebrationStarted = true;
 
-    var countdownEl = document.getElementById("countdown");
-    if(distance <= 5000 && distance > 0){
+    clearInterval(countdownTimer);
+
+    countdownEl.style.display = "none";
+    messageEl.classList.add("showMessage");
+
+    fireworkBurst();
+
+    confettiInterval = setInterval(fireworkBurst, 2500);
+
+    setTimeout(() => {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+
+        messageEl.classList.remove("showMessage");
+        messageEl.style.display = "none";
+
+        boxesEl.style.display = "flex";
+
+        const giftBoxes = boxesEl.querySelectorAll(".box");
+
+        giftBoxes.forEach((box, index) => {
+            setTimeout(() => {
+                box.classList.add("show");
+            }, index * 250);
+        });
+
+        heartbeatAudio.pause();
+        heartbeatAudio.currentTime = 0;
+        heartbeatAudio.volume = 0;
+    }, 7000);
+}
+
+/* =========================================
+   COUNTDOWN UPDATE
+========================================= */
+
+function updateCountdown() {
+    const distance = target - Date.now();
+
+    if (distance <= 0) {
+        ["weeks", "days", "hours", "minutes", "seconds"].forEach((id) => {
+            document.getElementById(id).textContent = "00";
+        });
+
+        celebrate();
+        return;
+    }
+
+    const totalSeconds = Math.floor(distance / 1000);
+
+    const weeks = Math.floor(totalSeconds / 604800);
+    const days = Math.floor((totalSeconds % 604800) / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    document.getElementById("weeks").textContent =
+        String(weeks).padStart(2, "0");
+
+    document.getElementById("days").textContent =
+        String(days).padStart(2, "0");
+
+    document.getElementById("hours").textContent =
+        String(hours).padStart(2, "0");
+
+    document.getElementById("minutes").textContent =
+        String(minutes).padStart(2, "0");
+
+    document.getElementById("seconds").textContent =
+        String(seconds).padStart(2, "0");
+
+    // Pulse and heartbeat during the final five seconds.
+    if (distance <= 5000) {
         countdownEl.classList.add("pulse");
-        if(audioStarted){ heartbeatAudio.volume = Math.min(0.7, 0.7*(5000-distance)/5000); }
+
+        if (audioStarted && !heartbeatAudio.paused) {
+            heartbeatAudio.volume = Math.max(
+                0,
+                Math.min(0.7, 0.7 * (5000 - distance) / 5000)
+            );
+        }
     } else {
         countdownEl.classList.remove("pulse");
-        if(audioStarted){ heartbeatAudio.volume = 0; }
-    }
 
-    if(distance <= 0){
-        clearInterval(timer);
-        countdownEl.style.display = "none";
-
-        const message = document.getElementById("message");
-        message.classList.add("showMessage");
-
-        fireworkBurst();
-        var confettiInterval = setInterval(fireworkBurst, 400);
-
-        setTimeout(() => {
-            clearInterval(confettiInterval);
-            message.style.display = "none";
-
-            const boxes = document.getElementById("boxes");
-            boxes.style.display = "flex";
-            const boxElements = boxes.querySelectorAll(".box");
-            boxElements.forEach((box,index)=>{
-                setTimeout(()=>{ box.classList.add("show"); }, index*200);
-            });
-
-            if(audioStarted){ heartbeatAudio.pause(); }
-        }, 7000);
-    }
-},1000);
-document.getElementById("rotateBtn").addEventListener("click", async () => {
-    try {
-        // Enter fullscreen (hides chrome bar)
-        if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
+        if (audioStarted) {
+            heartbeatAudio.volume = 0;
         }
-
-        // Lock to landscape
-        if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock("landscape");
-        }
-
-    } catch (err) {
-        console.log("Rotation / fullscreen failed:", err);
-        alert("Rotate your phone manually 🙂");
     }
-});
-const rotateBtn = document.getElementById("rotateBtn");
-const rotateIcon = rotateBtn.querySelector("i");
-const rotateText = rotateBtn.querySelector("span");
+}
+
+// Update immediately, then once per second.
+updateCountdown();
+
+if (!celebrationStarted) {
+    countdownTimer = setInterval(updateCountdown, 1000);
+}
+
+/* =========================================
+   FULLSCREEN AND LANDSCAPE
+========================================= */
 
 rotateBtn.addEventListener("click", async () => {
-
-    if (!document.fullscreenElement) {
-
-        // ENTER FULLSCREEN
-        if (document.documentElement.requestFullscreen) {
+    try {
+        if (!document.fullscreenElement) {
             await document.documentElement.requestFullscreen();
-        }
 
-        // TRY ROTATE (ignore failure)
-        try {
-            await screen.orientation.lock("landscape");
-        } catch (e) {
-            console.log("Rotation not supported");
-        }
-
-        rotateIcon.classList.replace("fa-expand","fa-compress");
-        rotateText.textContent = "Exit Fullscreen";
-
-    } else {
-
-        // EXIT FULLSCREEN
-        if (document.exitFullscreen) {
+            try {
+                if (screen.orientation?.lock) {
+                    await screen.orientation.lock("landscape");
+                }
+            } catch (error) {
+                console.log("Landscape lock is not supported on this device.");
+            }
+        } else {
             await document.exitFullscreen();
+
+            try {
+                screen.orientation?.unlock();
+            } catch (error) {
+                console.log("Orientation unlock is unavailable.");
+            }
         }
-
-        try {
-            screen.orientation.unlock();
-        } catch(e){}
-
-        rotateIcon.classList.replace("fa-compress","fa-expand");
-        rotateText.textContent = "Fullscreen";
+    } catch (error) {
+        console.error("Fullscreen action failed:", error);
     }
+});
+
+// Keep the button label and icon in sync with the actual browser state.
+document.addEventListener("fullscreenchange", () => {
+    const isFullscreen = Boolean(document.fullscreenElement);
+
+    rotateIcon.classList.toggle("fa-expand", !isFullscreen);
+    rotateIcon.classList.toggle("fa-compress", isFullscreen);
+
+    rotateText.textContent = isFullscreen
+        ? "Exit Fullscreen"
+        : "Fullscreen";
+
+    rotateBtn.setAttribute(
+        "aria-label",
+        isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+    );
 });
 </script>
 
